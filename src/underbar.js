@@ -51,6 +51,22 @@ var _ = {};
   // Note: _.each does not have a return value, but rather simply runs the
   // iterator function over each item in the input collection.
   _.each = function(collection, iterator) {
+    if (Array.isArray(collection)){ 
+      //If Array, call iterator on each element
+      for (var i=0; i<collection.length; i++){
+        iterator(collection[i], i, collection);
+      }
+      return;
+    }else if(typeof collection === 'object'){
+      //If Object, call iterator on each enumerable, own(?) property
+      for (var key in collection){
+        if (collection.hasOwnProperty(key)){
+          iterator(collection[key], key, collection);
+        }
+      }
+    }else{//Neither object nor array
+      console.log("Collection type unrecognized or null.")
+    }
   };
 
   // Returns the index at which value can be found in the array, or -1 if value
