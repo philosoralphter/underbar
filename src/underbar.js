@@ -51,21 +51,29 @@ var _ = {};
   // Note: _.each does not have a return value, but rather simply runs the
   // iterator function over each item in the input collection.
   _.each = function(collection, iterator) {
+
+    //If Array, call iterator on each element
     if (Array.isArray(collection)){ 
-      //If Array, call iterator on each element
       for (var i=0; i<collection.length; i++){
         iterator(collection[i], i, collection);
       }
       return;
+
+    //If Object, call iterator on each enumerable, own(?) property
     }else if(typeof collection === 'object'){
-      //If Object, call iterator on each enumerable, own(?) property
       for (var key in collection){
         if (collection.hasOwnProperty(key)){
           iterator(collection[key], key, collection);
+        }else{
+          console.log('Skipping property ' + key); //log property if not Object's own
         }
       }
-    }else{//Neither object nor array
-      console.log("Collection type unrecognized or null.")
+      return;
+
+    //Neither object nor array
+    }else{
+      console.log("Collection type unrecognized or null.");
+      return;
     }
   };
 
@@ -88,6 +96,15 @@ var _ = {};
 
   // Return all elements of an array that pass a truth test.
   _.filter = function(collection, test) {
+    var results = [];
+
+    for (var i=0; i<collection.length; i++) {
+      if (test(collection[i], i)){
+        results.push(collection[i]);
+      }
+    }
+
+    return results;
   };
 
   // Return all elements of an array that don't pass a truth test.
