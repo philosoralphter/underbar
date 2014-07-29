@@ -1,3 +1,6 @@
+//Project By Ralph Samuel
+//
+
 /*jshint eqnull:true, expr:true*/
 
 var _ = {};
@@ -8,6 +11,7 @@ var _ = {};
   // seem very useful, but remember it--if a function needs to provide an
   // iterator when the user does not pass one in, this will be handy.
   _.identity = function(val) {
+    return val;
   };
 
   /**
@@ -38,6 +42,7 @@ var _ = {};
   // Like first, but for the last elements. If n is undefined, return just the
   // last element.
   _.last = function(array, n) {
+    return n === undefined ? array[array.length-1] : n === 0 ? [] : array.slice(-n);
   };
 
   // Call iterator(value, key, collection) for each element of collection.
