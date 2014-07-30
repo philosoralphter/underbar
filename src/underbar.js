@@ -60,7 +60,7 @@ var _ = {};
       return;
 
     //If Object, call iterator on each enumerable, own(?) property
-    }else if(typeof collection === 'object'){
+    }else if(Object.prototype.toString.call(collection) == '[object Object]'){
       for (var key in collection){
         if (collection.hasOwnProperty(key)){
           iterator(collection[key], key, collection);
@@ -180,6 +180,28 @@ var _ = {};
   //     return total + number;
   //   }, 0); // should be 6
   _.reduce = function(collection, iterator, accumulator) {
+    //If Array:
+    if (Array.isArray(collection)){
+      //Set accumulator to default if not provided
+      if (accumulator === undefined) var accumulator = collection[0];
+      //Apply Iterator to array elements
+      for (var i=0; i<collection.length; i++) {
+        accumulator = iterator(accumulator, collection[i]);
+      }
+      return accumulator;
+    
+    //If Object:
+    }else if(Object.prototype.toString.call(collection) == '[object Object]'){
+      //Set accumulator to default if not provided
+      if (accumulator === undefined) var accumulator = Object.keys(collection)[0];
+      //Apply Iterator to Object's own, enumerable properties.
+      for (var key in collection){
+        if (collection.hasOwnProperty(key)){
+          accumulator = iterator(accumulator, collection[key]);
+        }
+      }
+      return accumulator;
+    }
   };
 
   // Determine if the array or object contains a given value (using `===`).
@@ -197,7 +219,14 @@ var _ = {};
 
   // Determine whether all of the elements match a truth test.
   _.every = function(collection, iterator) {
-    // TIP: Try re-using reduce() here.
+    //setup _.identity as default iterator if needed
+    if(arguments.length < 2) var iterator = _.identity;
+
+    //Use _.reduce to iterate
+    return _.reduce(collection, function(allPass, item){
+      if(! iterator(item)) allPass = false;         //truth test
+      return allPass === false ? false : allPass;   //exit condition or continue
+    }, true);
   };
 
   // Determine whether any of the elements pass a truth test. If no iterator is
