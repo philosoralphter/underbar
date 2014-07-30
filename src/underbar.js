@@ -229,10 +229,22 @@ var _ = {};
     }, true);
   };
 
+
   // Determine whether any of the elements pass a truth test. If no iterator is
   // provided, provide a default one
+      // TIP: There's a very clever way to re-use every() here.
   _.some = function(collection, iterator) {
-    // TIP: There's a very clever way to re-use every() here.
+    //setup _.identity as default iterator if needed
+    if(arguments.length < 2) var iterator = _.identity;
+
+    if (!_.every(collection, function(value, index){
+      return ! iterator(value, index);
+    })) {
+      //then
+      return true;
+    }else{
+    return false;
+    }
   };
 
 
@@ -255,11 +267,31 @@ var _ = {};
   //     bla: "even more stuff"
   //   }); // obj1 now contains key1, key2, key3 and bla
   _.extend = function(obj) {
+    var passedObjects = Array.prototype.slice.call(arguments, 1);
+
+    for (var i=0, length=passedObjects.length; i<length; i++){
+      for (var prop in passedObjects[i]){
+        if (passedObjects[i].hasOwnProperty(prop)){
+          obj[prop] = passedObjects[i][prop];
+        }
+      }
+    }
+    return obj;
   };
 
   // Like extend, but doesn't ever overwrite a key that already
   // exists in obj
   _.defaults = function(obj) {
+    var passedObjects = Array.prototype.slice.call(arguments, 1);
+
+    for (var i=0, length=passedObjects.length; i<length; i++){
+      for (var prop in passedObjects[i]){
+        if (passedObjects[i].hasOwnProperty(prop) && !obj.hasOwnProperty(prop)){
+          obj[prop] = passedObjects[i][prop];
+        }
+      }
+    }
+    return obj;
   };
 
 
