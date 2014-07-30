@@ -129,9 +129,13 @@ var _ = {};
 
   // Return the results of applying an iterator to each element.
   _.map = function(collection, iterator) {
-    // map() is a useful primitive iteration function that works a lot
-    // like each(), but in addition to running the operation on all
-    // the members, it also maintains an array of results.
+    // Assumes collection is an array
+    var results = [];
+
+    for (var i=0; i<collection.length; i++){
+      results.push(iterator(collection[i], i));
+    }
+    return results;
   };
 
   /*
@@ -140,7 +144,7 @@ var _ = {};
    * as an example of this.
    */
 
-  // Takes an array of objects and returns and array of the values of
+  // Takes an array of objects and returns an array of the values of
   // a certain property in it. E.g. take an array of people and return
   // an array of just their ages
   _.pluck = function(collection, key) {
@@ -155,6 +159,11 @@ var _ = {};
   // Calls the method named by functionOrKey on each value in the list.
   // Note: you will nead to learn a bit about .apply to complete this.
   _.invoke = function(collection, functionOrKey, args) {
+    return _.map(collection, function(item, index){
+      return Object.prototype.toString.call(functionOrKey) == '[object Function]' 
+      ? functionOrKey.apply(item, args)
+      : item[functionOrKey].apply(item, args);
+    });
   };
 
   // Reduces an array or object to a single value by repetitively calling
