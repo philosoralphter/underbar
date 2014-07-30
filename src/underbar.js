@@ -111,10 +111,19 @@ var _ = {};
   _.reject = function(collection, test) {
     // TIP: see if you can re-use _.filter() here, without simply
     // copying code in and modifying it
+
+    return _.filter(collection, function(item, index){
+      return ! test(item, index);
+    });
+
   };
 
   // Produce a duplicate-free version of the array.
   _.uniq = function(array) {
+    return _.filter(array, function(item, index){
+      //assumes indexOf() always returns first index of item as per ECMAScript 5.1
+      return (index === array.indexOf(item)); 
+    });
   };
 
 
