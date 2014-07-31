@@ -333,6 +333,23 @@ var _ = {};
   // already computed the result for the given argument and return that value
   // instead if possible.
   _.memoize = function(func) {
+
+    //Prepare memoized version of func
+    var memoizedFunction = function(arg){
+      //Declare cache var, local to both closure function, and higher-order function for persistence
+      var functionCache = memoizedFunction.functionCache;
+
+      //If result of function(arg) not in cache, return computed result and add to cache
+      if (!functionCache.hasOwnProperty(arg)){
+        functionCache[arg] = func.call(this, arg);
+      }
+      //memoizedFunction() returns result from cache
+      return functionCache[arg];
+    };
+    //Initialize clean cache for memoizedFunction()
+    memoizedFunction.functionCache = {};
+    //_.memoize() returns memoized version of func
+    return memoizedFunction;  
   };
 
   // Delays a function for the given number of milliseconds, and then calls
@@ -342,6 +359,10 @@ var _ = {};
   // parameter. For example _.delay(someFunction, 500, 'a', 'b') will
   // call someFunction('a', 'b') after 500ms
   _.delay = function(func, wait) {
+
+    var args = Array.prototype.slice.call(arguments, 2);
+
+    return setTimeout(function(){return func.apply(null, args);}, wait);
   };
 
 
@@ -356,6 +377,18 @@ var _ = {};
   // input array. For a tip on how to make a copy of an array, see:
   // http://mdn.io/Array.prototype.slice
   _.shuffle = function(array) {
+    var copiedArray = array.slice(0);
+    var shuffledArray = [];
+
+    while (copiedArray.length>0){
+      var randomIndex = Math.floor(Math.random() * array.length);
+      
+      if (shuffledArray[randomIndex] == null) {
+        shuffledArray[randomIndex] = copiedArray.pop();
+      }
+    }
+
+    return shuffledArray;
   };
 
 
