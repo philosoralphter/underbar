@@ -402,27 +402,60 @@ var _ = {};
   // If iterator is a string, sort objects by that property with the name
   // of that string. For example, _.sortBy(people, 'name') should sort
   // an array of people by their name.
+ 
   _.sortBy = function(collection, iterator) {
+    
   };
+  
 
   // Zip together two or more arrays with elements of the same index
   // going together.
   //
   // Example:
   // _.zip(['a','b','c','d'], [1,2,3]) returns [['a',1], ['b',2], ['c',3], ['d',undefined]]
-  _.zip = function() {
-  };
+ /* _.zip = function() {
+    var result = [];
+    var args = Array.prototype.slice.call(arguments, 0);
 
+    _.reduce(args, funciton(initial, value){
+      initial = initial.push();
+    }, []);
+
+  };
+*/
   // Takes a multidimensional array and converts it to a one-dimensional array.
   // The new array should contain all elements of the multidimensional array.
   //
   // Hint: Use Array.isArray to check if something is an array
-  _.flatten = function(nestedArray, result) {
+  _.flatten = function(nestedArray) { //*****Removed 'result' arguments[1]
+    
+    return  _.reduce(nestedArray, function(a,b){  
+      //if item is array, recurse
+      if (b instanceof Array){
+        return a.concat(_.flatten(b));
+
+      }else{ //else if item is not array, concat to result
+        return (a.concat(b));
+      }
+    },[]);
   };
 
   // Takes an arbitrary number of arrays and produces an array that contains
   // every item shared between all the passed-in arrays.
   _.intersection = function() {
+    var args = Array.prototype.slice.call(arguments, 0);
+
+    //unique<--flatten--<map args<--filter each array for<--_.every array in arg<--_.contains current item
+    return _.uniq(_.flatten(_.map(args, function(arayFromArgs){
+      
+      return _.filter(arayFromArgs, function(itemFromArray){
+        
+        return _.every(args, function(arrayFromArgs){
+
+          return _.contains(arrayFromArgs, itemFromArray);
+        })
+      });
+    })));
   };
 
   // Take the difference between one array and a number of other arrays.
@@ -441,6 +474,7 @@ var _ = {};
   //
   // See the Underbar readme for details.
   _.throttle = function(func, wait) {
+   
   };
 
 }).call(this);
