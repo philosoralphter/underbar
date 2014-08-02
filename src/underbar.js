@@ -404,7 +404,36 @@ var _ = {};
   // an array of people by their name.
  
   _.sortBy = function(collection, iterator) {
+    //***********************
+    //>>>>>>>>>  N.B.  <<<<<<<<<<<<
+    //********
+    //_.sortBy() works with Safari. fails with chrome v8 js engine. 
+        //Sorting is unstable. Uses quicksort.  
+        //Discusion (v8 bug): https://code.google.com/p/v8/issues/detail?id=90
+        //One workaround: http://stackoverflow.com/questions/3195941/sorting-an-array-of-objects-in-chrome 
+            //Not implemented because must add new, nunenumerable prop on point object. Please advise.
+    //It seems no help from underscore as underscore function is for diferent purpose
     
+    var result = collection.slice(0);
+
+    //If iterator is String
+    if (typeof iterator == 'string'){      
+      //sort by that sting/key
+      result.sort(function(a, b){
+        return a[iterator] - b[iterator];
+      });
+      return result;
+    }
+
+    //If iterator is function
+    if (iterator instanceof Function){
+      result.sort(function(a, b){
+        //sort by given criterion
+        return iterator(a) - iterator(b);
+      });
+      return result;
+    }
+
   };
   
 
@@ -413,16 +442,37 @@ var _ = {};
   //
   // Example:
   // _.zip(['a','b','c','d'], [1,2,3]) returns [['a',1], ['b',2], ['c',3], ['d',undefined]]
- /* _.zip = function() {
-    var result = [];
-    var args = Array.prototype.slice.call(arguments, 0);
 
-    _.reduce(args, funciton(initial, value){
-      initial = initial.push();
-    }, []);
+  _.zip = function() {
 
+    //****Dificulty finding good functional solution. 
+    //*****potential leaks marked with asterisks
+
+    //set up sorted arguments array 
+    //********uses sort()*******
+    var sortedArgs = Array.prototype.slice.call(arguments, 0).sort(function(a, b){
+      return  b.length - a.length;
+    });
+
+    //Make new array with array-ified versions of all items in longest array from args
+    //*******uses shift() on sortedArguments *********
+    var result = _.map(sortedArgs.shift(), function(item, index){
+      var arrayVersion = [item];
+      return arrayVersion;
+    });
+   
+   //push to each array in result, from appropriate values in other arrays in sorted arguments 
+   //***********uses shift() on source arays************
+    _.each(result, function(resultTargetArray){
+      return _.each(sortedArgs, function(otherArray){
+        return resultTargetArray.push(otherArray.shift());
+      });
+    });
+
+    return result;
   };
-*/
+
+
   // Takes a multidimensional array and converts it to a one-dimensional array.
   // The new array should contain all elements of the multidimensional array.
   //
@@ -461,6 +511,14 @@ var _ = {};
   // Take the difference between one array and a number of other arrays.
   // Only the elements present in just the first array will remain.
   _.difference = function(array) {
+    var oneArray = Array.prototype.slice.call(arguments, 0, 1)[0];
+    var otherArrays = Array.prototype.slice.call(arguments, 1);
+    
+    return _.filter(oneArray, function(item){
+      return !_.some(otherArrays, function(otherArray){
+        return _.contains(otherArray, item);
+      });
+    });
   };
 
 
