@@ -532,6 +532,49 @@ var _ = {};
   //
   // See the Underbar readme for details.
   _.throttle = function(func, wait) {
+    var clear = true;
+    var queue = [];
+    var cachedReturnValue;
+
+    //setup timer to be started by throttledFuunction call
+    var timer = function()
+      {return setTimeout(function(){
+        //If function call in queue, call it and restart timer
+        if(queue.length>0){
+          //start timer again
+          timer();
+
+          //return throttled function(args popped off queue),
+          //and set to cachedReturnValue
+          return cachedReturnValue = func.apply(queue[0][0], queue.shift()[1]);
+        
+        }else{
+          clear = true;
+          return;
+        }
+      }, wait);
+    };
+
+    var throttledFunction = function(){
+      var args = Array.prototype.slice.call(arguments, 0);
+      
+      //If clear: toggle clear flag, start timer, invoke func, and return & cache value
+      if(clear){
+        clear = false;
+        timer();
+        return cachedReturnValue= func.apply(this, args);
+      }
+
+      //If not clear: push function call to queue, and return cached Value
+      if (!clear){
+        queue.push([this, args]);
+        return cachedReturnValue;
+      }
+
+      
+    };
+
+    return throttledFunction;
    
   };
 
